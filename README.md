@@ -16,6 +16,7 @@ genotypes simulated from the CTV model and then applied to real multi-environmen
 | `R/Functions.R` | Source of all functions (CTV analysis, data simulation, ANN training, classification, tables). Running it regenerates the files in `Functions/`. |
 | `R/Adap_Stab_CTV.R` | Main pipeline: CTV analysis of the real data → simulation → ANN training → classification of real genotypes. |
 | `R/Independent_Validation.R` | Evaluates the trained network, without retraining, on new independent simulated datasets. |
+| `R/CTV_Agreement.R` | Classifies the real genotypes with the classical CTV method (t and F tests, α = 0.05) and computes the agreement with the ANN (β1, β1 + β2 and stability). |
 | `Functions/*.rds` | Serialized versions of the functions in `R/Functions.R` (read by the main script). |
 | `Trained_Nets/2025_11_11_trained_mlp_ctv.rds` | **The trained network used in the article** (RSNNS `mlp` object). |
 | `Data/` | Empty. The field data are not distributed (see below). |
@@ -60,7 +61,13 @@ Open `Adap_Stab_CTV.Rproj` (the scripts use paths relative to the project root),
 ```r
 source("R/Adap_Stab_CTV.R")          # full pipeline (requires Data/new_data.xlsx)
 source("R/Independent_Validation.R")  # independent validation of the trained network
+source("R/CTV_Agreement.R")           # agreement between the ANN and the classical CTV method (requires the data)
 ```
+
+Simulation uses seed 4321, 500 genotypes per class and α = 0.01 for the t and F tests that
+retain simulated genotypes. The comparison with the classical CTV method uses α = 0.05.
+Note that `ctv()` returns p-values (in %) only; the classification at a given α is done in
+`R/CTV_Agreement.R`.
 
 Note: `R/Adap_Stab_CTV.R` retrains a network and saves it under `Trained_Nets/`. Rename the
 output file to avoid overwriting the network used in the article.
