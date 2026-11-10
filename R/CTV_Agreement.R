@@ -65,6 +65,16 @@ ann_class <- tibble(
 both <- inner_join(ctv_class, ann_class, by = "Genotype")
 stopifnot(nrow(both) == nrow(ctv_class))
 
+# Cohen's kappa: agreement corrected for the agreement expected by chance
+cohen_kappa <- function(a, b) {
+  lev <- union(a, b)
+  tab <- table(factor(a, levels = lev), factor(b, levels = lev))
+  n <- sum(tab)
+  po <- sum(diag(tab)) / n
+  pe <- sum(rowSums(tab) * colSums(tab)) / n^2
+  (po - pe) / (1 - pe)
+}
+
 agreement <- tibble(
   Parameter = c("beta1 (unfavorable environments)",
                 "beta1 + beta2 (favorable environments)",
@@ -72,13 +82,24 @@ agreement <- tibble(
   Agreements = c(sum(both$CTV_b1 == both$ANN_b1),
                  sum(both$CTV_b1_b2 == both$ANN_b1_b2),
                  sum(both$CTV_stab == both$ANN_stab)),
-  Genotypes = nrow(both)
+  Genotypes = nrow(both),
+  Kappa = c(cohen_kappa(both$CTV_b1, both$ANN_b1),
+            cohen_kappa(both$CTV_b1_b2, both$ANN_b1_b2),
+            cohen_kappa(both$CTV_stab, both$ANN_stab))
 ) |>
-  mutate(Percent = round(100 * Agreements / Genotypes, 1))
+  mutate(Percent = round(100 * Agreements / Genotypes, 1),
+         Kappa = round(Kappa, 2)) |>
+  relocate(Percent, .before = Kappa)
 
 cat(sprintf("\nAgreement between the ANN (%s) and the classical CTV method (alpha = %.2f)\n\n",
             basename(net_file), alpha))
 print(as.data.frame(agreement), row.names = FALSE)
+
+cat("\nCross-tabulations (rows: classical CTV; columns: ANN):\n")
+for (p in list(c("CTV_b1", "ANN_b1", "beta1"), c("CTV_b1_b2", "ANN_b1_b2", "beta1 + beta2"),
+               c("CTV_stab", "ANN_stab", "stability"))) {
+  cat("\n", p[3], "\n"); print(table(CTV = both[[p[1]]], ANN = both[[p[2]]]))
+}
 
 cat("\nGenotypes classified differently by the two methods:\n")
 both |>

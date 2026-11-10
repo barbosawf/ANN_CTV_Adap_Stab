@@ -16,7 +16,7 @@ genotypes simulated from the CTV model and then applied to real multi-environmen
 | `R/Functions.R` | Source of all functions (CTV analysis, data simulation, ANN training, classification, tables). Running it regenerates the files in `Functions/`. |
 | `R/Adap_Stab_CTV.R` | Main pipeline: CTV analysis of the real data → simulation → ANN training → classification of real genotypes. |
 | `R/Independent_Validation.R` | Evaluates the trained network, without retraining, on new independent simulated datasets. |
-| `R/CTV_Agreement.R` | Classifies the real genotypes with the classical CTV method (t and F tests, α = 0.05) and computes the agreement with the ANN (β1, β1 + β2 and stability). |
+| `R/CTV_Agreement.R` | Classifies the real genotypes with the classical CTV method (t and F tests, α = 0.05) and computes the agreement with the ANN (percentage and Cohen's kappa for β1, β1 + β2 and stability). |
 | `Functions/*.rds` | Serialized versions of the functions in `R/Functions.R` (read by the main script). |
 | `Trained_Nets/2025_11_11_trained_mlp_ctv.rds` | **The trained network used in the article** (RSNNS `mlp` object). |
 | `Data/` | Empty. The field data are not distributed (see below). |
