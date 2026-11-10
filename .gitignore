@@ -1,0 +1,16 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+*.RData
+
+# Field data are not distributed
+Data/*
+!Data/README.md
+Old_Files/
+
+# Local outputs and manuscript files
+Results/*
+!Results/.gitkeep
+*.pdf
+Rplot*.png
